@@ -18,9 +18,24 @@ export default function (context) {
                 self
             ) {
                 // Add a new `target` attribute, or replace the value of the existing one.
-                tokens[idx].attrSet('target', '_blank');
+                const title = tokens[idx].attrGet('title');
+                const href = tokens[idx].attrGet('href');
 
-                return JSON.stringify({ token: tokens[idx] }, undefined, 4);
+                const postMessageWithResponseTest = `
+                    webviewApi.postMessage('${contentScriptId}', '${href}');
+                    return false;
+                `;
+
+                return `
+                    <a
+                        data-from-md
+                        title="${title}"
+                        href="${href}"
+                        onclick="${postMessageWithResponseTest.replace(
+                            /\n/g,
+                            ' '
+                        )}">
+                `;
 
                 // Pass the token to the default renderer.
                 // return defaultRender(tokens, idx, options, env, self);
