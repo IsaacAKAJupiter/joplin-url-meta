@@ -21,3 +21,109 @@
     white-space: nowrap;
     border-width: 0;
 }
+
+* {
+    margin: 0;
+}
+
+.url-meta-containers {
+    margin: 0 15px;
+}
+
+.url-meta-container {
+    border: 2px solid;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.url-meta-container-image {
+    width: 100%;
+    border-bottom: 2px solid;
+    display: flex;
+    justify-content: center;
+}
+
+.url-meta-container-image > img {
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+}
+
+.url-meta-container-body {
+    padding: 5px 10px;
+}
+
+.url-meta-container-title {
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.url-meta-container-title, .url-meta-container-description {
+    padding: 5px 0;
+}
+
+.url-meta-container-footer {
+    border-top: 2px solid;
+    padding: 5px 5px 5px 10px;
+    margin-top: 5px;
+    overflow-wrap: anywhere;
+    line-break: anywhere;
+}
+
+.url-meta-container-buttons {
+    display: flex;
+}
+
+.url-meta-container-copy, .url-meta-container-open {
+    appearance: button;
+    outline: none;
+    border-radius: 0.5rem;
+    color: white;
+    padding: 5px 10px;
+    flex: 1 1 0%;
+    margin: 0 10px;
+    background-image: none;
+    text-transform: none;
+    box-sizing: border-box;
+    border: 0;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    font: unset;
+}
+
+.url-meta-container-copy {
+    background: #1b8efd;
+}
+
+.url-meta-container-open {
+    background: #06ad00;
+}
+
+/*  Scrollbar style
+  https://github.com/laurent22/joplin/blob/571147acbbf9ea61fd287ba05008727201bea951/packages/app-desktop/main.scss#L29 
+*/
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+  ::-webkit-scrollbar-corner {
+    background: none;
+  }
+  ::-webkit-scrollbar-track {
+    border: none;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 100, 0.3); 
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-track:hover {
+    background: rgba(0, 0, 0, 0.1); 
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 100, 100, 0.7); 
+  }
+  
+  /* End of Scrollbar style */
