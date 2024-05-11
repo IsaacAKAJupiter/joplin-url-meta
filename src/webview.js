@@ -11,3 +11,10 @@ function openURL(url) {
         data: url,
     });
 }
+
+function refetchMeta() {
+    webviewApi.postMessage({
+        type: 'refetch',
+        data: null,
+    });
+}

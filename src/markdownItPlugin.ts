@@ -22,7 +22,7 @@ export default function (context) {
                 const href = tokens[idx].attrGet('href');
 
                 const postMessageWithResponseTest = `
-                    webviewApi.postMessage('${contentScriptId}', '${href}');
+                    webviewApi.postMessage('${contentScriptId}', {'type': 'url', data: '${href}'});
                     return false;
                 `;
 

@@ -36,8 +36,6 @@ joplin.plugins.register({
 
         // On message.
         await joplin.views.panels.onMessage(panel, async ({ type, data }) => {
-            console.log({ type, data });
-
             // If copy.
             if (type === 'copy') {
                 await joplin.clipboard.writeText(data);
@@ -49,20 +47,92 @@ joplin.plugins.register({
                 await joplin.commands.execute('openItem', data);
                 return;
             }
+
+            // If refetch.
+            if (type === 'refetch') {
+                const note = await joplin.workspace.selectedNote();
+                if (!note) return;
+
+                // Delete the data and re-update the view.
+                await joplin.data.userDataDelete(
+                    ModelType.Note,
+                    note.id,
+                    'urlMetaPluginData'
+                );
+                updateView();
+            }
         });
 
+        // Register MarkdownIt plugin.
         await joplin.contentScripts.register(
             ContentScriptType.MarkdownItPlugin,
             'url_meta_mdit',
             './markdownItPlugin.js'
         );
 
+        // MarkdownIt Dialog.
+        const dialog = await joplin.views.dialogs.create('urlMetaDialog');
+        await joplin.views.dialogs.setFitToContent(dialog, false);
+        await joplin.views.dialogs.addScript(dialog, './webview.css');
+        await joplin.views.dialogs.setButtons(dialog, [
+            { id: 'copy', title: 'Copy' },
+            ...(!(await isMobile())
+                ? [
+                      {
+                          id: 'open',
+                          title: 'Open',
+                      },
+                  ]
+                : []),
+            { id: 'cancel', title: 'Cancel' },
+        ]);
+
         await joplin.contentScripts.onMessage(
             'url_meta_mdit',
-            ({ type, data }) => {
-                // TODO: Handle URLs here to open a dialog for information about it.
+            async ({ type, data }) => {
+                const note = await joplin.workspace.selectedNote();
+                if (!note) return;
+
+                // Handle URLs here to open a dialog for information about it.
                 if (type === 'url') {
-                    console.log(data);
+                    // Get the data for the note.
+                    const noteData = await joplin.data.userDataGet<
+                        | {
+                              url: string;
+                              title: string;
+                              description: string;
+                              image: string;
+                          }[]
+                        | undefined
+                    >(ModelType.Note, note.id, 'urlMetaPluginData');
+                    if (!noteData) return;
+
+                    const url = noteData.find((d) => d.url === data);
+                    if (!url) return;
+
+                    // Open dialog.
+                    await joplin.views.dialogs.setHtml(
+                        dialog,
+                        `
+							<div class="url-meta-dialog-container">							
+								${await getURLMetaHTML(url, true)}
+							</div>
+						`
+                    );
+                    const result = await joplin.views.dialogs.open(dialog);
+                    console.log({ result });
+
+                    // If copy.
+                    if (result.id === 'copy') {
+                        await joplin.clipboard.writeText(url.url);
+                        return;
+                    }
+
+                    // If open.
+                    if (result.id === 'open') {
+                        await joplin.commands.execute('openItem', url.url);
+                        return;
+                    }
                 }
             }
         );
@@ -108,33 +178,76 @@ joplin.plugins.register({
                 return;
             }
 
-            // Get the URLs in the note.
-            // TODO: Get note diff instead of just exists.
-            if (!data) {
-                const urls = noteURLs(note.body);
-                console.log(urls);
-                if (urls.length > 0) {
-                    // Get/set results for meta.
-                    const results = await Promise.all(
-                        urls.map((u) => handleMetaTags(u))
-                    );
+            // Get the new URLs.
+            const urls = noteURLs(note.body);
+            const newUrls = !data
+                ? urls
+                : urls.filter(
+                      (url) => data.findIndex((d) => d && d.url === url) === -1
+                  );
+
+            // Filter out old URLs.
+            const dataUrls = [];
+            if (data) {
+                for (const d of data) {
+                    // If still exists, push and continue.
+                    const stillExists = urls.includes(d.url);
+                    if (stillExists) {
+                        dataUrls.push(d);
+                        continue;
+                    }
+
+                    // Else, if resource, remove it.
+                    if (d.image && !/^https?:\/\//.test(d.image)) {
+                        console.log(
+                            `Deleting resource "${d.image}" for URL "${d.url}".`
+                        );
+                        try {
+                            await joplin.data.delete(['resources', d.image]);
+                        } catch (_) {}
+                    }
+                }
+            }
+
+            // If no new URLs, set HTML.
+            if (newUrls.length < 1) {
+                // Save data if changed.
+                if (
+                    (!data && dataUrls.length > 0) ||
+                    (data && data.length !== dataUrls.length)
+                ) {
                     await joplin.data.userDataSet(
                         ModelType.Note,
                         note.id,
                         'urlMetaPluginData',
-                        results
-                    );
-
-                    // Set HTML.
-                    await joplin.views.panels.setHtml(
-                        panel,
-                        await panelHTML(results)
+                        dataUrls
                     );
                 }
-            } else {
-                // Set HTML for data.
-                await joplin.views.panels.setHtml(panel, await panelHTML(data));
+
+                // Set HTML.
+                await joplin.views.panels.setHtml(
+                    panel,
+                    await panelHTML(dataUrls)
+                );
+                return;
             }
+
+            // Fetch the new URL meta.
+            const results = await Promise.all(
+                newUrls.map((u) => handleMetaTags(u))
+            );
+
+            // Set data with old URLs and new URLs.
+            const newData = [...dataUrls, ...results];
+            await joplin.data.userDataSet(
+                ModelType.Note,
+                note.id,
+                'urlMetaPluginData',
+                newData
+            );
+
+            // Set HTML.
+            await joplin.views.panels.setHtml(panel, await panelHTML(newData));
         }
 
         await joplin.workspace.onNoteSelectionChange(() => {
@@ -252,11 +365,17 @@ async function handleMetaTags(url: string) {
     // Save the image as a resource.
     let image = tagGet('image');
     if (image !== '') {
+        console.log(
+            `Attempting to save image "${image}" as resource for URL "${url}".`
+        );
         const imageHandle = await getImageHandleFromURL(image);
         if (imageHandle) {
             const resource = await joplin.imaging.toJpgResource(imageHandle, {
                 url: image,
             });
+            console.log(
+                `Saved image "${image}" as resource "${resource.id}" for URL "${url}".`
+            );
 
             // Store resource ID.
             image = resource.id;
@@ -293,20 +412,15 @@ async function panelHTML(
         joinedMetaHTML += await getURLMetaHTML(meta);
     }
 
-    // TODO: Button to re-fetch the URLs.
-    /*
-		await joplin.data.userDataDelete(
-			ModelType.Note,
-			note.id,
-			'urlMetaPluginData'
-		);
-		updateView();
-	*/
-
     return `
 		<div class="container">
-			<div>
-				<p>Some Header!</p>
+			<div class="url-meta-top-container">
+				<p>URL Meta Tags</p>
+				${
+                    (await isMobile())
+                        ? ''
+                        : `<button onclick="refetchMeta()">Re-fetch All</button>`
+                }
 			</div>
 
 			<div class="url-meta-containers">
@@ -316,12 +430,15 @@ async function panelHTML(
 	`;
 }
 
-async function getURLMetaHTML(meta: {
-    url: string;
-    title: string;
-    description: string;
-    image: string;
-}) {
+async function getURLMetaHTML(
+    meta: {
+        url: string;
+        title: string;
+        description: string;
+        image: string;
+    },
+    dialog: boolean = false
+) {
     const mobile = await isMobile();
     const imageIsLink = !!meta.image && /^https?:\/\//.test(meta.image);
 
@@ -354,20 +471,34 @@ async function getURLMetaHTML(meta: {
 				<p class="url-meta-container-description">
 					${escapeHtml(meta.description || 'No description found.')}
 				</p>
-				<div class="url-meta-container-buttons">
-					<button class="url-meta-container-copy" onclick="${onClickCopy}">Copy</button>
-					${
-                        mobile
-                            ? `
-								<a class="url-meta-container-open" target="_blank" rel="noopener noreferrer" href="${meta.url}">Open</a>
-							`
-                            : `
-								<button class="url-meta-container-open" onclick="${onClickOpen}">Open</button>
-							`
-                    }
-				</div>
+				${
+                    !dialog
+                        ? `
+							<div class="url-meta-container-buttons">
+								<button class="url-meta-container-copy" onclick="${onClickCopy}">Copy</button>
+								${
+                                    mobile
+                                        ? `
+											<a class="url-meta-container-open" target="_blank" rel="noopener noreferrer" href="${meta.url}">Open</a>
+										`
+                                        : `
+											<button class="url-meta-container-open" onclick="${onClickOpen}">Open</button>
+										`
+                                }
+							</div>
+						`
+                        : ''
+                }
 			</div>
-			<p class="url-meta-container-footer">${meta.url}</p>
+			${
+                !dialog
+                    ? `<p class="url-meta-container-footer">${meta.url}</p>`
+                    : `
+						<p class="url-meta-container-footer">
+							<a href="${meta.url}" target="_blank" rel="noopener noreferrer">${meta.url}</a>
+						</p>
+					`
+            }
 		</div>
 	`;
 }
