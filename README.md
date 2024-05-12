@@ -1,3 +1,11 @@
 # Joplin Plugin - URL Meta
 
 This plugin will grab and fetch meta tags (title, description and image) from URLs found in your notes. It also supports clicking on a URL in the markdown-it panel and popping up information in a dialog with options to open/copy. It also supports a panel that will show all found URLs in the note with buttons to open/copy. This plugin can only fetch these tags from the desktop client, but can display details in the mobile version.
+
+## Changelog
+
+### v1.0.1
+
+-   Added support for more image extensions via the canvas browser API.
+-   Now fetching meta tags for 1 URL at a time to prevent missing data for same domain. This also now includes a progress indicator in the panel.
+-   Refetch single URL now exists on desktop.
