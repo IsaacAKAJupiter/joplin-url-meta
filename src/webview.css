@@ -97,8 +97,7 @@ html {
     display: flex;
 }
 
-.url-meta-container-copy,
-.url-meta-container-open {
+.url-meta-container-buttons > button {
     appearance: button;
     outline: none;
     border-radius: 0.5rem;
@@ -122,6 +121,10 @@ html {
 
 .url-meta-container-open {
     background: #06ad00;
+}
+
+.url-meta-container-refetch {
+    background: #b90000;
 }
 
 /*  Scrollbar style
