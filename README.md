@@ -9,3 +9,9 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 -   Added support for more image extensions via the canvas browser API.
 -   Now fetching meta tags for 1 URL at a time to prevent missing data for same domain. This also now includes a progress indicator in the panel.
 -   Refetch single URL now exists on desktop.
+
+# v1.0.2
+
+-   Added support for inline URL metadata cards in the markdown viewer.
+-   Added setting to disable/enable inline markdown cards.
+-   Added setting for maximum dimension for downloaded metadata image. E.g: if set to 500, a 1920x1080 image would turn into 500x281.
