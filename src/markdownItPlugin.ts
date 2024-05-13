@@ -26,13 +26,16 @@ export default function (context) {
                         onclick="${postMessageWithResponseTest.replace(
                             /\n/g,
                             ' ',
-                        )}">
+                        )}"
+                    >
                 `;
             };
         },
         assets: function () {
-            // return [{ name: 'markdownItPlugin.css' }];
-            return [];
+            return [
+                { name: 'markdownItPluginOnLoad.js' },
+                { name: 'url-meta.css' },
+            ];
         },
     };
 }

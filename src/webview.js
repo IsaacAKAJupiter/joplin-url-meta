@@ -48,7 +48,6 @@ function handleImageConvert({ uid, b64, max }) {
 
         // Get the data and send back to webviewApi.
         const data = canvas.toDataURL();
-        console.log({ data });
         webviewApi.postMessage({
             type: 'imageConvertDone',
             data: { uid, value: data },
