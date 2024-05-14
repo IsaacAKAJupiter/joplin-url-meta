@@ -6,17 +6,21 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 
 ### v1.0.1
 
--   Added support for more image extensions via the canvas browser API.
--   Now fetching meta tags for 1 URL at a time to prevent missing data for same domain. This also now includes a progress indicator in the panel.
--   Refetch single URL now exists on desktop.
+- Added support for more image extensions via the canvas browser API.
+- Now fetching meta tags for 1 URL at a time to prevent missing data for same domain. This also now includes a progress indicator in the panel.
+- Refetch single URL now exists on desktop.
 
 ### v1.0.2
 
--   Added support for inline URL metadata cards in the markdown viewer.
--   Added setting to disable/enable inline markdown cards.
--   Added setting for maximum dimension for downloaded metadata image. E.g: if set to 500, a 1920x1080 image would turn into 500x281.
+- Added support for inline URL metadata cards in the markdown viewer.
+- Added setting to disable/enable inline markdown cards.
+- Added setting for maximum dimension for downloaded metadata image. E.g: if set to 500, a 1920x1080 image would turn into 500x281.
+
+### v1.0.3
+
+- Fix bug where video resources no longer load within the markdown viewer when the plugin is loaded.
+- When refetching metadata for a single URL in the panel on desktop, make the new metadata appear in the same place instead of at the bottom.
 
 ## Roadmap
 
--   Fix bug where video resources no longer load within the markdown viewer on mobile (possibly desktop as well?) when the plugin is loaded.
--   When refetching metadata for a single URL in the panel on desktop, make the new metadata appear in the same place instead of at the bottom.
+- Nothing as of now!

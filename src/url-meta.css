@@ -85,6 +85,18 @@
     line-break: anywhere;
 }
 
+.url-meta-container-footer-icon {
+    display: flex;
+    align-items: center;
+    color: inherit;
+}
+
+.url-meta-container-footer-icon > a {
+    color: inherit !important;
+    margin-right: 2px;
+    flex: 1 1 0%;
+}
+
 .url-meta-container-buttons {
     display: flex;
 }

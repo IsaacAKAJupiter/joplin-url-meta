@@ -75,25 +75,27 @@ joplin.plugins.register({
             const newUrls = !data
                 ? urls
                 : urls.filter(
-                      (url) => data.findIndex((d) => d && d.url === url) === -1,
+                      ({ url }) =>
+                          data.findIndex((d) => d && d.url === url) === -1,
                   );
 
             // Filter out old URLs.
-            const dataUrls = [];
+            let dataUrls: (URLMeta & { index: number })[] = [];
             if (data) {
                 for (const d of data) {
                     if (!d) continue;
 
                     // If still exists, push and continue.
-                    const stillExists = urls.includes(d.url);
-                    if (stillExists) {
-                        dataUrls.push(d);
+                    const existing = urls.find(({ url }) => d.url === url);
+                    if (existing) {
+                        dataUrls.push({ ...d, index: existing.index });
                         continue;
                     }
 
                     await deleteMetaImage(d);
                 }
             }
+            dataUrls = dataUrls.sort((a, b) => a.index - b.index);
 
             // If no new URLs, set HTML.
             if (newUrls.length < 1) {
@@ -106,7 +108,7 @@ joplin.plugins.register({
                         ModelType.Note,
                         note.id,
                         NOTE_DATA_KEY,
-                        dataUrls,
+                        dataUrls.map((d) => ({ ...d, index: undefined })),
                     );
                 }
 
@@ -119,26 +121,32 @@ joplin.plugins.register({
             }
 
             // Loop through and fetch one at a time to try and fix issues with same domain.
-            const fetched: URLMeta[] = [];
+            const fetched: (URLMeta & { index: number })[] = [];
             for (let i = 0; i < newUrls.length; i++) {
                 const newUrl = newUrls[i];
 
                 // Set HTML.
                 await joplin.views.panels.setHtml(
                     panel,
-                    `Fetching: ${newUrl} (${i + 1}/${newUrls.length})`,
+                    `Fetching: ${newUrl.url} (${i + 1}/${newUrls.length})`,
                 );
 
                 // Fetch.
-                const result = await handleMetaTags(libraries, newUrl, panel);
-                if (result) fetched.push(result);
+                const result = await handleMetaTags(
+                    libraries,
+                    newUrl.url,
+                    panel,
+                );
+                if (result) fetched.push({ ...result, index: newUrl.index });
             }
 
             // If all failed, ignore.
             if (fetched.length === 0) return;
 
-            // Set data with old URLs and new URLs.
-            const newData = [...dataUrls, ...fetched];
+            // Set data with old URLs and new URLs (make sure to sort and remove index).
+            const newData = [...dataUrls, ...fetched]
+                .sort((a, b) => a.index - b.index)
+                .map((v) => ({ ...v, index: undefined }));
             await joplin.data.userDataSet(
                 ModelType.Note,
                 note.id,

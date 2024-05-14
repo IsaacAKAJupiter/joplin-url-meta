@@ -31,7 +31,9 @@ export async function createURLMetaDialog() {
         'url_meta_mdit',
         async ({ type, data }) => {
             const note = await joplin.workspace.selectedNote();
-            if (!note) return;
+            if (!note) {
+                return type === 'inlineURLs' ? [] : undefined;
+            }
 
             // Get the data for the note.
             const noteData = await joplin.data.userDataGet<

@@ -12,5 +12,5 @@ export function getURLs(str: string) {
         }
     }
 
-    return urls;
+    return urls.map((url, i) => ({ url, index: i }));
 }
