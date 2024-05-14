@@ -18,4 +18,5 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 
 ## Roadmap
 
+-   Fix bug where video resources no longer load within the markdown viewer on mobile (possibly desktop as well?) when the plugin is loaded.
 -   When refetching metadata for a single URL in the panel on desktop, make the new metadata appear in the same place instead of at the bottom.
