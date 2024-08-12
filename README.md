@@ -25,6 +25,7 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 
 - Fixed issue [#2](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/2) by displaying URLs in reverse order and only skipping URLs if there is a container already containing that specific URL.
 
-## Roadmap
+## Roadmap/Known Issues
 
-- Nothing as of now!
+- Issue: Missing resource will not allow the panel to load.
+- Possible Issue: It seems as of pre release v3.1.1 images in markdown-it will not display properly (no longer file:// src?).
