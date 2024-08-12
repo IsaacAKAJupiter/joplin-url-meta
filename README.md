@@ -21,6 +21,10 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 - Fix bug where video resources no longer load within the markdown viewer when the plugin is loaded.
 - When refetching metadata for a single URL in the panel on desktop, make the new metadata appear in the same place instead of at the bottom.
 
+### v1.0.4
+
+- Fixed issue [#2](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/2) by displaying URLs in reverse order and only skipping URLs if there is a container already containing that specific URL.
+
 ## Roadmap
 
 - Nothing as of now!

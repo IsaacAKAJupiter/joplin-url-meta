@@ -1,3 +1,13 @@
+// From https://stackoverflow.com/a/6234804/561309
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 function getClosestNonTextElement(el) {
     // If text element, try next parent.
     const textElements = [
@@ -39,22 +49,29 @@ async function handleURLMetaAnchors() {
     });
 
     const metaData = [];
-    for (const url of urls) {
+    for (let i = urls.length - 1; i >= 0; i--) {
+        const url = urls[i];
         const { parent, el } = getClosestNonTextElement(mappedURLs[url]);
-
-        // If the element already has a div with the required class, ignore it.
-        if (
-            el.nextElementSibling &&
-            el.nextElementSibling.classList.contains(
-                'url-meta-markdown-container',
-            )
-        ) {
-            continue;
-        }
 
         // Get the URL without ending slash if required.
         const withoutEndingSlash =
             url[url.length - 1] === '/' && url.slice(0, -1);
+
+        // If the element already has a div with the required class and URL, ignore it.
+        const urlEscaped = escapeHtml(url);
+        const urlWOESEscaped =
+            withoutEndingSlash && escapeHtml(withoutEndingSlash);
+        if (
+            el.nextElementSibling &&
+            el.nextElementSibling.classList.contains(
+                'url-meta-markdown-container',
+            ) &&
+            (el.nextElementSibling.dataset.url === urlEscaped ||
+                (urlWOESEscaped &&
+                    el.nextElementSibling.dataset.url === urlWOESEscaped))
+        ) {
+            continue;
+        }
 
         // Get the metadata from response.
         const meta = response.find(

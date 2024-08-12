@@ -4,6 +4,7 @@ import { getURLMetaHTML } from './meta';
 import { ModelType } from 'api/types';
 import { URLMeta } from 'src/types/data';
 import { NOTE_DATA_KEY } from './settings';
+import { escapeHtml } from './html';
 
 export async function createURLMetaDialog() {
     // Create dialog.
@@ -85,10 +86,9 @@ export async function createURLMetaDialog() {
                 return await Promise.all(
                     noteData.map(async (d) => ({
                         ...d,
-                        html: `<div class="url-meta-markdown-container">${await getURLMetaHTML(
-                            d,
-                            true,
-                        )}</div>`,
+                        html: `<div class="url-meta-markdown-container" data-url="${escapeHtml(
+                            d.url,
+                        )}">${await getURLMetaHTML(d, true)}</div>`,
                     })),
                 );
             }
