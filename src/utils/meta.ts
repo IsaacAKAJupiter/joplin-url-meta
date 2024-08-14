@@ -40,7 +40,10 @@ export async function getURLMetaHTML(meta: URLMeta, dialog: boolean = false) {
     // If resource ID, fetch the full path.
     let imagePath = '';
     if (meta.image && !imageIsLink) {
-        const fullPath = await joplin.data.resourcePath(meta.image);
+        let fullPath = '';
+        try {
+            fullPath = await joplin.data.resourcePath(meta.image);
+        } catch {}
         imagePath = `file:///${fullPath}?t=${Date.now()}`;
     }
 

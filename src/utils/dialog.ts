@@ -33,7 +33,9 @@ export async function createURLMetaDialog() {
         async ({ type, data }) => {
             const note = await joplin.workspace.selectedNote();
             if (!note) {
-                return type === 'inlineURLs' ? [] : undefined;
+                return type === 'inlineURLs'
+                    ? { urls: [], displayMethod: 'default' }
+                    : undefined;
             }
 
             // Get the data for the note.
@@ -74,23 +76,31 @@ export async function createURLMetaDialog() {
 
             // Handle inlineURLs.
             if (type === 'inlineURLs') {
+                // Get the setting for display method.
+                const displayMethod = await joplin.settings.value(
+                    'inlineMarkdownItDisplayMethod',
+                );
+
                 // If not allowed to display inline.
                 if (!(await joplin.settings.value('inlineMarkdownIt'))) {
-                    return [];
+                    return { urls: [], displayMethod };
                 }
 
                 // If no data.
-                if (!noteData) return [];
+                if (!noteData) return { urls: [], displayMethod };
 
                 // Return the data with HTML.
-                return await Promise.all(
-                    noteData.map(async (d) => ({
-                        ...d,
-                        html: `<div class="url-meta-markdown-container" data-url="${escapeHtml(
-                            d.url,
-                        )}">${await getURLMetaHTML(d, true)}</div>`,
-                    })),
-                );
+                return {
+                    urls: await Promise.all(
+                        noteData.map(async (d) => ({
+                            ...d,
+                            html: `<div class="url-meta-markdown-container" data-url="${escapeHtml(
+                                d.url,
+                            )}">${await getURLMetaHTML(d, true)}</div>`,
+                        })),
+                    ),
+                    displayMethod,
+                };
             }
         },
     );

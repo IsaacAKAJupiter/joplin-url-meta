@@ -26,32 +26,54 @@ function getClosestNonTextElement(el) {
         return getClosestNonTextElement(el.parentElement);
     }
 
-    return { parent: el.parentElement, el };
+    return el;
+}
+
+function getElementToDisplayAfter(el, displayMethod) {
+    // If display method is ultra compact, it is immediate.
+    if (displayMethod == 'ultraCompact') return el;
+
+    // If default, get the closest non text element.
+    if (displayMethod == 'default') return getClosestNonTextElement(el);
+
+    // If compact, we need to get the next br element or end of tag entirely.
+    let newEl = el;
+    while ((newEl = newEl.nextSibling)) {
+        if (newEl.nodeName == 'BR') break;
+    }
+
+    // If br node, return it.
+    if (newEl) return newEl;
+
+    // If no other nodes, we can just display it after the last child node.
+    return el.parentElement.lastElementChild;
 }
 
 async function handleURLMetaAnchors() {
     const anchors = Array.from(document.querySelectorAll('a'));
     if (anchors.length < 1) return;
 
-    const mappedURLs = anchors.reduce((prev, curr) => {
+    const urls = anchors.reduce((prev, curr) => {
         if (!curr.href) return prev;
 
-        prev[curr.href] = curr;
+        prev.push({ url: curr.href, element: curr });
         return prev;
-    }, {});
-    const urls = Object.keys(mappedURLs);
+    }, []);
     if (urls.length < 1) return;
 
     // Get the data for the URLs.
-    const response = await webviewApi.postMessage('url_meta_mdit', {
-        type: 'inlineURLs',
-        data: null,
-    });
+    const { urls: inlineURLs, displayMethod } = await webviewApi.postMessage(
+        'url_meta_mdit',
+        {
+            type: 'inlineURLs',
+            data: null,
+        },
+    );
 
     const metaData = [];
     for (let i = urls.length - 1; i >= 0; i--) {
-        const url = urls[i];
-        const { parent, el } = getClosestNonTextElement(mappedURLs[url]);
+        const { url, element } = urls[i];
+        const el = getElementToDisplayAfter(element, displayMethod);
 
         // Get the URL without ending slash if required.
         const withoutEndingSlash =
@@ -74,7 +96,7 @@ async function handleURLMetaAnchors() {
         }
 
         // Get the metadata from response.
-        const meta = response.find(
+        const meta = inlineURLs.find(
             (d) =>
                 d.url === url ||
                 (withoutEndingSlash && d.url === withoutEndingSlash),
@@ -82,7 +104,14 @@ async function handleURLMetaAnchors() {
         if (!meta) continue;
 
         // If matching, insert.
-        el.insertAdjacentHTML('afterend', meta.html);
+        try {
+            el.insertAdjacentHTML(
+                el.nodeName == 'BR' ? 'beforebegin' : 'afterend',
+                meta.html,
+            );
+        } catch (e) {
+            console.error(e);
+        }
     }
 }
 

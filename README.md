@@ -25,7 +25,17 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 
 - Fixed issue [#2](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/2) by displaying URLs in reverse order and only skipping URLs if there is a container already containing that specific URL.
 
+### v1.0.5
+
+- Added new setting "Metadata In Markdown Display Method" (special thanks to [deepspaceaxolotl](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/2#issuecomment-2285087563) for the idea). This can be one of the following options.
+  - Default: Requires empty line between links.
+  - Compact: Requires line break (not an extra empty line) between links.
+  - Ultra Compact: Renders immediately after the link no matter what.
+- Slight fix for the regex for matching URLs (a link with a hash containing a hyphen would break).
+  - E.g: <https://example.com/abc#test-123> would not work.
+- Links appearing multiple times within a note are now rendered every time, not just the bottommost.
+- Missing resource will no longer cause the "URL Meta Tags" panel to indefinitely load.
+
 ## Roadmap/Known Issues
 
-- Issue: Missing resource will not allow the panel to load.
 - Possible Issue: It seems as of pre release v3.1.1 images in markdown-it will not display properly (no longer file:// src?).

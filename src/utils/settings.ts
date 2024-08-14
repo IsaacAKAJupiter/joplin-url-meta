@@ -23,6 +23,21 @@ export async function registerSettings() {
             description:
                 'Enable to show the metadata information for each URL within the rendered markdown.',
         },
+        inlineMarkdownItDisplayMethod: {
+            type: SettingItemType.String,
+            value: 'default',
+            section: SETTINGS_SECTION,
+            public: true,
+            isEnum: true,
+            options: {
+                default: 'Default',
+                compact: 'Compact',
+                ultraCompact: 'Ultra Compact',
+            },
+            label: 'Metadata In Markdown Display Method',
+            description:
+                'The display method when displaying metadata in the rendered markdown. Default requires empty line between links, compact requires line break (not an extra empty line) between links, ultra compact renders immediately after the link no matter what (not recommended).',
+        },
         maxDimension: {
             type: SettingItemType.Int,
             value: 500,
