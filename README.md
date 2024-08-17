@@ -36,6 +36,9 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 - Links appearing multiple times within a note are now rendered every time, not just the bottommost.
 - Missing resource will no longer cause the "URL Meta Tags" panel to indefinitely load.
 
-## Roadmap/Known Issues
+### v1.0.6
 
-- Possible Issue: It seems as of pre release v3.1.1 images in markdown-it will not display properly (no longer file:// src?).
+- Compact/Ultra Compact display methods now only apply margin between metadata containers.
+- Resource image src URIs now use the `file://` prefix if before v3.1.1 and the `joplin-content://note-viewer/` prefix if v3.1.1 or newer.
+
+## Roadmap/Known Issues

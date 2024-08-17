@@ -50,6 +50,14 @@
     margin-bottom: 15px;
 }
 
+.url-meta-markdown-container > .url-meta-container-compact {
+    margin-bottom: 0px !important;
+}
+
+.url-meta-markdown-container > .url-meta-container-compact-mt {
+    margin-top: 15px;
+}
+
 .url-meta-container-image {
     width: 100%;
     border-bottom: 2px solid;

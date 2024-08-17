@@ -3,6 +3,7 @@ import { escapeHtml } from './html';
 import { isMobile } from './mobile';
 import { LOGGING_HEADER } from './settings';
 import { URLMeta } from 'src/types/data';
+import { getResourceURL } from './resource';
 
 export const imagesConverting: {
     [key: string]: (value: string | null) => void | Promise<void>;
@@ -40,11 +41,7 @@ export async function getURLMetaHTML(meta: URLMeta, dialog: boolean = false) {
     // If resource ID, fetch the full path.
     let imagePath = '';
     if (meta.image && !imageIsLink) {
-        let fullPath = '';
-        try {
-            fullPath = await joplin.data.resourcePath(meta.image);
-        } catch {}
-        imagePath = `file:///${fullPath}?t=${Date.now()}`;
+        imagePath = await getResourceURL(meta.image);
     }
 
     // Get the command for onclick.

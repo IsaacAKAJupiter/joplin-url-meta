@@ -71,7 +71,7 @@ async function handleURLMetaAnchors() {
     );
 
     const metaData = [];
-    for (let i = urls.length - 1; i >= 0; i--) {
+    for (let i = 0; i < urls.length; i++) {
         const { url, element } = urls[i];
         const el = getElementToDisplayAfter(element, displayMethod);
 
@@ -83,14 +83,21 @@ async function handleURLMetaAnchors() {
         const urlEscaped = escapeHtml(url);
         const urlWOESEscaped =
             withoutEndingSlash && escapeHtml(withoutEndingSlash);
+        const elContainer =
+            el.nodeName === 'DIV' &&
+            el.classList.contains('url-meta-markdown-container')
+                ? el
+                : el.nodeName == 'BR' &&
+                  el.previousElementSibling &&
+                  el.previousElementSibling.classList.contains(
+                      'url-meta-markdown-container',
+                  )
+                ? el.previousElementSibling
+                : null;
         if (
-            el.nextElementSibling &&
-            el.nextElementSibling.classList.contains(
-                'url-meta-markdown-container',
-            ) &&
-            (el.nextElementSibling.dataset.url === urlEscaped ||
-                (urlWOESEscaped &&
-                    el.nextElementSibling.dataset.url === urlWOESEscaped))
+            elContainer &&
+            (elContainer.dataset.url === urlEscaped ||
+                (urlWOESEscaped && elContainer.dataset.url === urlWOESEscaped))
         ) {
             continue;
         }
@@ -103,11 +110,29 @@ async function handleURLMetaAnchors() {
         );
         if (!meta) continue;
 
-        // If matching, insert.
         try {
+            // Build HTML.
+            let html = meta.html;
+
+            // If compact, remove margin-bottom.
+            if (displayMethod == 'compact' || displayMethod == 'ultraCompact') {
+                html = html.replace(
+                    'url-meta-container',
+                    'url-meta-container url-meta-container-compact',
+                );
+
+                // If previous element is another container, add margin-top.
+                if (elContainer) {
+                    html = html.replace(
+                        'url-meta-container',
+                        'url-meta-container url-meta-container-compact-mt',
+                    );
+                }
+            }
+
             el.insertAdjacentHTML(
                 el.nodeName == 'BR' ? 'beforebegin' : 'afterend',
-                meta.html,
+                html,
             );
         } catch (e) {
             console.error(e);
