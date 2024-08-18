@@ -71,6 +71,7 @@ async function handleURLMetaAnchors() {
     );
 
     const metaData = [];
+    const brToRemove = [];
     for (let i = 0; i < urls.length; i++) {
         const { url, element } = urls[i];
         const el = getElementToDisplayAfter(element, displayMethod);
@@ -130,6 +131,23 @@ async function handleURLMetaAnchors() {
                 }
             }
 
+            // If BR and compact/ultraCompact, add to remove list.
+            if (
+                el.nodeName == 'BR' &&
+                (displayMethod == 'compact' || displayMethod == 'ultraCompact')
+            ) {
+                brToRemove.push(el);
+            }
+
+            // If ultraCompact, check if next is BR and add it.
+            if (
+                displayMethod == 'ultraCompact' &&
+                el.nextSibling &&
+                el.nextSibling.nodeName == 'BR'
+            ) {
+                brToRemove.push(el.nextSibling);
+            }
+
             el.insertAdjacentHTML(
                 el.nodeName == 'BR' ? 'beforebegin' : 'afterend',
                 html,
@@ -138,6 +156,9 @@ async function handleURLMetaAnchors() {
             console.error(e);
         }
     }
+
+    // Remove the BR elements.
+    for (const b of brToRemove) b.remove();
 }
 
 handleURLMetaAnchors();
