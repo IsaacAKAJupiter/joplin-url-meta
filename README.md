@@ -41,4 +41,8 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 - Compact/Ultra Compact display methods now only apply margin between metadata containers.
 - Resource image src URIs now use the `file://` prefix if before v3.1.1 and the `joplin-content://note-viewer/` prefix if v3.1.1 or newer.
 
+### v1.0.7
+
+- Remove BR elements if using compact/ultraCompact display type when they exist right after the anchor tags. This should make the display closer to how it would render without the plugin (with just an injection for the meta information).
+
 ## Roadmap/Known Issues
