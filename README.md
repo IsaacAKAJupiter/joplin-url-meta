@@ -45,4 +45,15 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 
 - Remove BR elements if using compact/ultraCompact display type when they exist right after the anchor tags. This should make the display closer to how it would render without the plugin (with just an injection for the meta information).
 
+### v1.0.8
+
+- Added new setting "Metadata In Markdown Click Behaviour" (special thanks to [deepspaceaxolotl](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/4#issue-2591373344) for the idea). This can be one of the following options.
+  - Dialog (with option of copy/open)
+  - Copy
+  - Open
+  - Do Nothing
+- Added fallback to the webpage title if no title meta tag found.
+  - This fixes [this issue](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/3#issuecomment-2416413276).
+- Add new advanced setting for "Debug Copy HTML Content". If enabled, the entire webpage used to parse the meta tags will be copied to the clipboard. This is mainly for use in Github issues.
+
 ## Roadmap/Known Issues
