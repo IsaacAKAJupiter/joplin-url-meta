@@ -18,6 +18,14 @@ export async function fetchMetaTags(
 
     try {
         const { data } = await libraries.axios.get(url);
+
+        // If debugCopyHTML.
+        const debugCopyHTML = await joplin.settings.value('debugCopyHTML');
+        if (debugCopyHTML) {
+            await joplin.clipboard.writeText(data);
+        }
+
+        // Load the HTML and get the meta tags.
         const $ = libraries.cheerio.load(data);
         const metaTags: { [key: string]: string } = {
             '|title|': $('title').text(),
@@ -203,8 +211,6 @@ export async function handleMetaTags(
     fetchingMetaURLs.push(url);
 
     const tags = await fetchMetaTags(libraries, url);
-    console.log(`tags for ${url}`);
-    console.log(tags);
     const tagGet = (key: string) => {
         // Try og: first, then plain, then pipes (custom). If neither, default empty string.
         if (`og:${key}` in tags) return tags[`og:${key}`];

@@ -63,5 +63,15 @@ export async function registerSettings() {
             description:
                 'The metadata image downloaded will resize each dimension (with respect to aspect ratio) to be a maximum of this value. E.g: if set to 500, a 1920x1080 image would turn into 500x281.',
         },
+        debugCopyHTML: {
+            type: SettingItemType.Bool,
+            value: false,
+            section: SETTINGS_SECTION,
+            advanced: true,
+            public: true,
+            label: 'Debug Copy HTML Content',
+            description:
+                'If enabled, it will copy the HTML of the webpage being fetched for meta tags. For use in Github issues.',
+        },
     });
 }
