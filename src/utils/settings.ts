@@ -38,6 +38,22 @@ export async function registerSettings() {
             description:
                 'The display method when displaying metadata in the rendered markdown. Default requires empty line between links, compact requires line break (not an extra empty line) between links, ultra compact renders immediately after the link no matter what (not recommended).',
         },
+        inlineMarkdownItClickBehaviour: {
+            type: SettingItemType.String,
+            value: 'dialog',
+            section: SETTINGS_SECTION,
+            public: true,
+            isEnum: true,
+            options: {
+                dialog: 'Dialog (with option of copy/open)',
+                copy: 'Copy',
+                open: 'Open',
+                nothing: 'Do Nothing',
+            },
+            label: 'Metadata In Markdown Click Behaviour',
+            description:
+                'This defines what should happen when a link is clicked in the rendered markdown.',
+        },
         maxDimension: {
             type: SettingItemType.Int,
             value: 500,

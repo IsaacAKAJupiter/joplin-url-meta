@@ -19,7 +19,9 @@ export async function fetchMetaTags(
     try {
         const { data } = await libraries.axios.get(url);
         const $ = libraries.cheerio.load(data);
-        const metaTags: { [key: string]: string } = {};
+        const metaTags: { [key: string]: string } = {
+            '|title|': $('title').text(),
+        };
 
         $('meta').each((i, element) => {
             const name = $(element).attr('name') || $(element).attr('property');
@@ -201,10 +203,13 @@ export async function handleMetaTags(
     fetchingMetaURLs.push(url);
 
     const tags = await fetchMetaTags(libraries, url);
+    console.log(`tags for ${url}`);
+    console.log(tags);
     const tagGet = (key: string) => {
-        // Try og: first, then plain. If neither, default empty string.
+        // Try og: first, then plain, then pipes (custom). If neither, default empty string.
         if (`og:${key}` in tags) return tags[`og:${key}`];
         if (key in tags) return tags[key];
+        if (`|${key}|` in tags) return tags[`|${key}|`];
         return '';
     };
 

@@ -50,28 +50,44 @@ export async function createURLMetaDialog() {
                 const url = noteData.find((d) => d.url === data);
                 if (!url) return;
 
-                // Open dialog.
-                await joplin.views.dialogs.setHtml(
-                    dialog,
-                    `
-                        <div class="url-meta-dialog-container">							
-                            ${await getURLMetaHTML(url, true)}
-                        </div>
-                    `,
+                // Get the setting for click behaviour.
+                const clickBehaviour = await joplin.settings.value(
+                    'inlineMarkdownItClickBehaviour',
                 );
-                const result = await joplin.views.dialogs.open(dialog);
 
-                // If copy.
-                if (result.id === 'copy') {
-                    await joplin.clipboard.writeText(url.url);
-                    return;
-                }
+                const handleClickBehaviour = async (behaviour: string) => {
+                    // If nothing.
+                    if (behaviour === 'nothing') return;
 
-                // If open.
-                if (result.id === 'open') {
-                    await joplin.commands.execute('openItem', url.url);
-                    return;
-                }
+                    // If copy.
+                    if (behaviour === 'copy') {
+                        await joplin.clipboard.writeText(url.url);
+                        return;
+                    }
+
+                    // If open.
+                    if (behaviour === 'open') {
+                        await joplin.commands.execute('openItem', url.url);
+                        return;
+                    }
+
+                    // If dialog.
+                    if (behaviour === 'dialog') {
+                        // Open dialog.
+                        await joplin.views.dialogs.setHtml(
+                            dialog,
+                            `
+                                <div class="url-meta-dialog-container">							
+                                    ${await getURLMetaHTML(url, true)}
+                                </div>
+                            `,
+                        );
+                        const result = await joplin.views.dialogs.open(dialog);
+                        await handleClickBehaviour(result.id);
+                    }
+                };
+
+                await handleClickBehaviour(clickBehaviour);
             }
 
             // Handle inlineURLs.
