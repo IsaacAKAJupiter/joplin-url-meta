@@ -4,6 +4,7 @@ import { isMobile } from './mobile';
 import { LOGGING_HEADER } from './settings';
 import { URLMeta } from 'src/types/data';
 import { getResourceURL } from './resource';
+import { getYouTubeIDFromURL, getYouTubeMetaTags } from './youtube';
 
 export const imagesConverting: {
     [key: string]: (value: string | null) => void | Promise<void>;
@@ -13,10 +14,18 @@ export const fetchingMetaURLs: string[] = [];
 export async function fetchMetaTags(
     libraries: { [key: string]: any },
     url: string,
+    youtubeAPIKey?: string,
 ) {
     if (!libraries.axios || !libraries.cheerio || (await isMobile())) return;
 
     try {
+        // Handle via YouTube API if setup.
+        const youtubeID = getYouTubeIDFromURL(url);
+        if (youtubeAPIKey && youtubeID) {
+            return getYouTubeMetaTags(libraries, youtubeID, youtubeAPIKey);
+        }
+
+        // Handle normally.
         const { data } = await libraries.axios.get(url);
 
         // If debugCopyHTML.
@@ -210,7 +219,8 @@ export async function handleMetaTags(
 
     fetchingMetaURLs.push(url);
 
-    const tags = await fetchMetaTags(libraries, url);
+    const youtubeAPIKey = await joplin.settings.value('youtubeAPIKey');
+    const tags = await fetchMetaTags(libraries, url, youtubeAPIKey);
     const tagGet = (key: string) => {
         // Try og: first, then plain, then pipes (custom). If neither, default empty string.
         if (`og:${key}` in tags) return tags[`og:${key}`];

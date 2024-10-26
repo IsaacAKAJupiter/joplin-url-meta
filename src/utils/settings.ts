@@ -63,6 +63,16 @@ export async function registerSettings() {
             description:
                 'The metadata image downloaded will resize each dimension (with respect to aspect ratio) to be a maximum of this value. E.g: if set to 500, a 1920x1080 image would turn into 500x281.',
         },
+        youtubeAPIKey: {
+            type: SettingItemType.String,
+            value: '',
+            section: SETTINGS_SECTION,
+            advanced: true,
+            public: true,
+            label: 'YouTube Data API v3 Key',
+            description:
+                'If set, YouTube playlist / video metadata will be fetched from the YouTube API via the key provided instead of a normal GET request.',
+        },
         debugCopyHTML: {
             type: SettingItemType.Bool,
             value: false,

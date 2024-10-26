@@ -56,4 +56,9 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
   - This fixes [this issue](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/3#issuecomment-2416413276).
 - Add new advanced setting for "Debug Copy HTML Content". If enabled, the entire webpage used to parse the meta tags will be copied to the clipboard. This is mainly for use in Github issues.
 
+### v1.0.9
+
+- Added new setting "YouTube Data API v3 Key" to fetch YouTube video (including shorts) and playlist metadata via the API instead of a normal GET request.
+  - This fixes [this issue](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/3)
+
 ## Roadmap/Known Issues
