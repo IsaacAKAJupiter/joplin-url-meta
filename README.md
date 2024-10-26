@@ -60,5 +60,8 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 
 - Added new setting "YouTube Data API v3 Key" to fetch YouTube video (including shorts) and playlist metadata via the API instead of a normal GET request.
   - This fixes [this issue](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/3)
+  - Note, this will most-likely **not** work for private videos/playlists.
+  - To get an **API Key**, follow [this](https://developers.google.com/youtube/v3/getting-started) getting started guide by Google.
+    - When creating credentials, it may ask you **What data will you be accessing?** For this, choose **Public data**.
 
 ## Roadmap/Known Issues
