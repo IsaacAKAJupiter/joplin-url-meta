@@ -20,9 +20,10 @@ export async function getResourceURL(resource: string) {
         fullPath = await joplin.data.resourcePath(resource);
 
         // If version 3.1.1 or newer, return new way of accessing resources, else use file://.
-        const prefix = (await isSameOrNewerVersion('3.1.1'))
-            ? 'joplin-content://note-viewer/'
-            : 'file://';
+        const prefix =
+            !(await isMobile()) && (await isSameOrNewerVersion('3.1.1'))
+                ? 'joplin-content://note-viewer/'
+                : 'file://';
         return `${prefix}${fullPath}?t=${Date.now()}`;
     } catch (_) {}
 
@@ -30,7 +31,7 @@ export async function getResourceURL(resource: string) {
 }
 
 export async function isSameOrNewerVersion(againstVersion: string) {
-    const { version: currentVersion } = await joplin.versionInfo();
+    const { version: currentVersion, platform } = await joplin.versionInfo();
 
     // Get the parts of the version.
     const againstParts = againstVersion.split('.');
@@ -55,4 +56,9 @@ export async function isSameOrNewerVersion(againstVersion: string) {
 
     // If got here, it is the same.
     return true;
+}
+
+export async function isMobile() {
+    const { platform } = await joplin.versionInfo();
+    return platform === 'mobile';
 }
