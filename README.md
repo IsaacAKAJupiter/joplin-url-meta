@@ -64,4 +64,8 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
   - To get an **API Key**, follow [this](https://developers.google.com/youtube/v3/getting-started) getting started guide by Google.
     - When creating credentials, it may ask you **What data will you be accessing?** For this, choose **Public data**.
 
+### v1.0.10
+
+- Possible fix for mobile metadata images not correctly showing.
+
 ## Roadmap/Known Issues
