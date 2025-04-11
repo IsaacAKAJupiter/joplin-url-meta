@@ -68,7 +68,7 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 
 - Possible fix for mobile metadata images not correctly showing.
 
-### v1.0.11 - Ongoing
+### v1.0.11
 
 - Added new setting "Max Description Lines" which enables the ability to truncate/cut off/curtail long descriptions after a certain line count. Special thanks to [deepspaceaxolotl](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/7#issue-2979378438) for the idea.
 - Added new setting "Hide Empty Meta URLs" which enables the ability to not show anything within the markdown if the link has no title, description, and image. Special thanks to [deepspaceaxolotl](https://github.com/IsaacAKAJupiter/joplin-url-meta/issues/8#issue-2979421179) for the idea.
