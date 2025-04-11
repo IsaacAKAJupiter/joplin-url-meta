@@ -1,7 +1,7 @@
 import joplin from 'api';
 import { escapeHtml } from './html';
 import { isMobile } from './mobile';
-import { LOGGING_HEADER } from './settings';
+import { getSetting, LOGGING_HEADER } from './settings';
 import { URLMeta } from 'src/types/data';
 import { getResourceURL } from './resource';
 import { getYouTubeIDFromURL, getYouTubeMetaTags } from './youtube';
@@ -29,7 +29,7 @@ export async function fetchMetaTags(
         const { data } = await libraries.axios.get(url);
 
         // If debugCopyHTML.
-        const debugCopyHTML = await joplin.settings.value('debugCopyHTML');
+        const debugCopyHTML = await getSetting<boolean>('debugCopyHTML');
         if (debugCopyHTML) {
             await joplin.clipboard.writeText(data);
         }
@@ -53,9 +53,23 @@ export async function fetchMetaTags(
     }
 }
 
-export async function getURLMetaHTML(meta: URLMeta, dialog: boolean = false) {
+export async function getURLMetaHTML(
+    meta: URLMeta,
+    displayMethod: 'markdown' | 'panel' | 'dialog',
+) {
     const mobile = await isMobile();
     const imageIsLink = !!meta.image && /^https?:\/\//.test(meta.image);
+
+    let maxDescriptionLines: number = 0;
+    if (displayMethod != 'dialog') {
+        maxDescriptionLines =
+            (await getSetting<number>('maxDescriptionLines')) ?? 0;
+    }
+
+    const clampCSS =
+        maxDescriptionLines > 0
+            ? `overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: ${maxDescriptionLines};`
+            : '';
 
     // If resource ID, fetch the full path.
     let imagePath = '';
@@ -85,11 +99,11 @@ export async function getURLMetaHTML(meta: URLMeta, dialog: boolean = false) {
                 <p class="url-meta-container-title">
                     ${escapeHtml(meta.title || 'No Title Found')}
                 </p>
-                <p class="url-meta-container-description">
+                <p class="url-meta-container-description" style="${clampCSS}">
                     ${escapeHtml(meta.description || 'No description found.')}
                 </p>
                 ${
-                    !dialog
+                    displayMethod === 'panel'
                         ? `
                             <div class="url-meta-container-buttons">
                                 <button class="url-meta-container-copy" onclick="${onClickCopy}">Copy</button>
@@ -115,7 +129,7 @@ export async function getURLMetaHTML(meta: URLMeta, dialog: boolean = false) {
                 }
             </div>
             ${
-                !dialog || !mobile
+                displayMethod !== 'panel' || !mobile
                     ? `<p class="url-meta-container-footer">${meta.url}</p>`
                     : `
                         <p class="url-meta-container-footer url-meta-container-footer-icon">
@@ -161,7 +175,7 @@ export async function getImageHandleFromURL(
         // If not png, convert.
         let converted: Buffer | null = null;
         if (fileType.ext !== 'png') {
-            const maxDimension = await joplin.settings.value('maxDimension');
+            const maxDimension = await getSetting<number>('maxDimension');
             console.log(
                 `${LOGGING_HEADER}: Converting image to PNG with a max dimension of ${maxDimension}.`,
             );
@@ -219,7 +233,7 @@ export async function handleMetaTags(
 
     fetchingMetaURLs.push(url);
 
-    const youtubeAPIKey = await joplin.settings.value('youtubeAPIKey');
+    const youtubeAPIKey = await getSetting<string>('youtubeAPIKey');
     const tags = await fetchMetaTags(libraries, url, youtubeAPIKey);
     const tagGet = (key: string) => {
         // Try og: first, then plain, then pipes (custom). If neither, default empty string.
@@ -277,7 +291,7 @@ export async function panelHTML(metas: (URLMeta | null | undefined)[]) {
     for (const meta of metas) {
         if (!meta) continue;
 
-        joinedMetaHTML += await getURLMetaHTML(meta);
+        joinedMetaHTML += await getURLMetaHTML(meta, 'panel');
     }
 
     return `

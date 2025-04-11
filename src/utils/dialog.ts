@@ -3,7 +3,7 @@ import { isMobile } from './mobile';
 import { getURLMetaHTML } from './meta';
 import { ModelType } from 'api/types';
 import { URLMeta } from 'src/types/data';
-import { NOTE_DATA_KEY } from './settings';
+import { getSetting, NOTE_DATA_KEY } from './settings';
 import { escapeHtml } from './html';
 
 export async function createURLMetaDialog() {
@@ -51,7 +51,7 @@ export async function createURLMetaDialog() {
                 if (!url) return;
 
                 // Get the setting for click behaviour.
-                const clickBehaviour = await joplin.settings.value(
+                const clickBehaviour = await getSetting<string>(
                     'inlineMarkdownItClickBehaviour',
                 );
 
@@ -78,7 +78,7 @@ export async function createURLMetaDialog() {
                             dialog,
                             `
                                 <div class="url-meta-dialog-container">							
-                                    ${await getURLMetaHTML(url, true)}
+                                    ${await getURLMetaHTML(url, 'dialog')}
                                 </div>
                             `,
                         );
@@ -87,18 +87,18 @@ export async function createURLMetaDialog() {
                     }
                 };
 
-                await handleClickBehaviour(clickBehaviour);
+                await handleClickBehaviour(clickBehaviour ?? 'dialog');
             }
 
             // Handle inlineURLs.
             if (type === 'inlineURLs') {
                 // Get the setting for display method.
-                const displayMethod = await joplin.settings.value(
+                const displayMethod = await getSetting<string>(
                     'inlineMarkdownItDisplayMethod',
                 );
 
                 // If not allowed to display inline.
-                if (!(await joplin.settings.value('inlineMarkdownIt'))) {
+                if (!(await getSetting<boolean>('inlineMarkdownIt'))) {
                     return { urls: [], displayMethod };
                 }
 
@@ -112,7 +112,7 @@ export async function createURLMetaDialog() {
                             ...d,
                             html: `<div class="url-meta-markdown-container" data-url="${escapeHtml(
                                 d.url,
-                            )}">${await getURLMetaHTML(d, true)}</div>`,
+                            )}">${await getURLMetaHTML(d, 'markdown')}</div>`,
                         })),
                     ),
                     displayMethod,

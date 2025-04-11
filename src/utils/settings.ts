@@ -63,6 +63,15 @@ export async function registerSettings() {
             description:
                 'The metadata image downloaded will resize each dimension (with respect to aspect ratio) to be a maximum of this value. E.g: if set to 500, a 1920x1080 image would turn into 500x281.',
         },
+        maxDescriptionLines: {
+            type: SettingItemType.Int,
+            value: 0,
+            section: SETTINGS_SECTION,
+            public: true,
+            label: 'Max Description Lines',
+            description:
+                'This will truncate the description to a set maximum line count in the preview panel and in the markdown. Set to 0 or less to always show the full description.',
+        },
         youtubeAPIKey: {
             type: SettingItemType.String,
             value: '',
@@ -84,4 +93,25 @@ export async function registerSettings() {
                 'If enabled, it will copy the HTML of the webpage being fetched for meta tags. For use in Github issues.',
         },
     });
+}
+
+export async function getSetting<T>(key: string): Promise<T | undefined> {
+    try {
+        if (typeof joplin.settings.values === 'function') {
+            const settings = await joplin.settings.values(key);
+            if (settings && settings[key] !== undefined) {
+                return settings[key] as T;
+            } else {
+                return undefined;
+            }
+        } else {
+            try {
+                return (await joplin.settings.value(key)) as T | undefined;
+            } catch {
+                return undefined;
+            }
+        }
+    } catch {
+        return undefined;
+    }
 }
