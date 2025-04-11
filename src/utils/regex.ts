@@ -7,8 +7,10 @@ export function getURLs(str: string) {
     while ((arr = multiUrlRegex.exec(str)) !== null) {
         if (!arr[0]) break;
 
-        if (!urls.includes(arr[0])) {
-            urls.push(arr[0]);
+        const url = arr[0].endsWith('~') ? arr[0].replace(/~*$/g, '') : arr[0];
+
+        if (!urls.includes(url)) {
+            urls.push(url);
         }
     }
 

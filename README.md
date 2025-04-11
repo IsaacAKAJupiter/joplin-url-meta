@@ -78,4 +78,11 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 - The description in the container will no longer display `No description found.` and instead will just not display anything.
 - Hide specific links in the markdown preview by making sure the link ends with 1 (or more) `~` (tilde) characters.
 
+### v1.0.12
+
+- Added support for wrapping links with `<` and `>` to hide the URL in the markdown preview.
+  - Note, the following does not work `[github](<https://github.com>)`, but for something equivalent, `[github](https://github.com~)` should work.
+- Fixed an issue related to how the `~` (tilde) hiding worked.
+  - If the URL had path (more than just the FQDN), it would not remain clickable.
+
 ## Roadmap/Known Issues

@@ -249,7 +249,10 @@ joplin.plugins.register({
             // Loop through and fetch one at a time to try and fix issues with same domain.
             const fetched: (URLMeta & { index: number })[] = [];
             for (let i = 0; i < newUrls.length; i++) {
-                const newUrl = newUrls[i];
+                let newUrl = newUrls[i];
+                if (newUrl.url.endsWith('~')) {
+                    newUrl.url = newUrl.url.replace(/~*$/, '');
+                }
 
                 // Set HTML.
                 await joplin.views.panels.setHtml(

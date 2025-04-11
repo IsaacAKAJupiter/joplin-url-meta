@@ -18,6 +18,7 @@ export default function (context) {
             ) {
                 const title = tokens[idx].attrGet('title');
                 const href = tokens[idx].attrGet('href');
+                const surroundedWithAngled = tokens[idx].markup == 'autolink';
 
                 // If href is not a URL use default renderer.
                 if (
@@ -40,7 +41,11 @@ export default function (context) {
 
                 return `
                     <a
-                        data-from-md ${href.endsWith('~') ? 'data-hide-md' : ''}
+                        data-from-md ${
+                            href.endsWith('~') || surroundedWithAngled
+                                ? 'data-hide-md'
+                                : ''
+                        }
                         ${title ? `title="${title}"` : ''}
                         href="${hrefWithoutTilde}"
                         onclick="${postMessageWithResponseTest.replace(
