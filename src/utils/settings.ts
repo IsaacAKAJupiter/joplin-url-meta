@@ -72,6 +72,15 @@ export async function registerSettings() {
             description:
                 'This will truncate the description to a set maximum line count in the preview panel and in the markdown. Set to 0 or less to always show the full description.',
         },
+        hideEmptyMetaURLs: {
+            type: SettingItemType.Bool,
+            value: false,
+            section: SETTINGS_SECTION,
+            public: true,
+            label: 'Hide Empty Meta URLs',
+            description:
+                'If enabled, it will not show the metadata in the markdown if the fetched URL has no title, description, and image.',
+        },
         youtubeAPIKey: {
             type: SettingItemType.String,
             value: '',

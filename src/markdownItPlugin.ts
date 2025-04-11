@@ -29,16 +29,20 @@ export default function (context) {
                     return defaultRender(tokens, idx, options, env, self);
                 }
 
+                const hrefWithoutTilde = href.endsWith('~')
+                    ? href.replace(/~*$/, '')
+                    : href;
+
                 const postMessageWithResponseTest = `
-                    webviewApi.postMessage('${contentScriptId}', {'type': 'url', data: '${href}'});
+                    webviewApi.postMessage('${contentScriptId}', {'type': 'url', data: '${hrefWithoutTilde}'});
                     return false;
                 `;
 
                 return `
                     <a
-                        data-from-md
+                        data-from-md ${href.endsWith('~') ? 'data-hide-md' : ''}
                         ${title ? `title="${title}"` : ''}
-                        href="${href}"
+                        href="${hrefWithoutTilde}"
                         onclick="${postMessageWithResponseTest.replace(
                             /\n/g,
                             ' ',

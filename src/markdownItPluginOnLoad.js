@@ -54,7 +54,7 @@ async function handleURLMetaAnchors() {
     if (anchors.length < 1) return;
 
     const urls = anchors.reduce((prev, curr) => {
-        if (!curr.href) return prev;
+        if (!curr.href || curr.dataset.hideMd !== undefined) return prev;
 
         prev.push({ url: curr.href, element: curr });
         return prev;
@@ -104,16 +104,21 @@ async function handleURLMetaAnchors() {
         }
 
         // Get the metadata from response.
-        const meta = inlineURLs.find(
-            (d) =>
-                d.url === url ||
-                (withoutEndingSlash && d.url === withoutEndingSlash),
-        );
+        const meta = url.endsWith('~')
+            ? null
+            : inlineURLs.find(
+                  (d) =>
+                      d.url === url ||
+                      (withoutEndingSlash && d.url === withoutEndingSlash),
+              );
         if (!meta) continue;
 
         try {
             // Build HTML.
-            let html = meta.html;
+            let html = meta.html.replace(
+                '{_REPLACE_OPEN_}',
+                `webviewApi.postMessage('url_meta_mdit', {'type': 'openURL', data: '${url}'})`,
+            );
 
             // If compact, remove margin-bottom.
             if (displayMethod == 'compact' || displayMethod == 'ultraCompact') {

@@ -78,6 +78,7 @@
 .url-meta-container-title {
     font-weight: 700;
     text-decoration: underline;
+    cursor: pointer;
 }
 
 .url-meta-container-title,

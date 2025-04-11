@@ -77,6 +77,11 @@ export async function getURLMetaHTML(
         imagePath = await getResourceURL(meta.image);
     }
 
+    let title = meta.title;
+    if (!title) {
+        title = meta.url.replace(/https?:\/\//, '').split('/')[0];
+    }
+
     // Get the command for onclick.
     const onClickOpen = `openURL(&quot;${meta.url}&quot;)`;
     const onClickCopy = `copy(&quot;${meta.url}&quot;)`;
@@ -96,12 +101,36 @@ export async function getURLMetaHTML(
                     : ''
             }
             <div class="url-meta-container-body">
-                <p class="url-meta-container-title">
-                    ${escapeHtml(meta.title || 'No Title Found')}
-                </p>
-                <p class="url-meta-container-description" style="${clampCSS}">
-                    ${escapeHtml(meta.description || 'No description found.')}
-                </p>
+                ${
+                    mobile
+                        ? `
+                            <p class="url-meta-container-title">
+                                <a class="url-meta-container-open" target="_blank" rel="noopener noreferrer" href="${
+                                    meta.url
+                                }">
+                                    ${escapeHtml(title)}
+                                </a>
+                            </p>
+                        `
+                        : `
+                            <p class="url-meta-container-title" onclick="${
+                                displayMethod !== 'markdown'
+                                    ? onClickOpen
+                                    : '{_REPLACE_OPEN_}'
+                            }">
+                                ${escapeHtml(title)}
+                            </p>
+                        `
+                }
+                ${
+                    meta.description
+                        ? `
+                            <p class="url-meta-container-description" style="${clampCSS}">
+                                ${escapeHtml(meta.description)}
+                            </p>
+                        `
+                        : ''
+                }
                 ${
                     displayMethod === 'panel'
                         ? `
