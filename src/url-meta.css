@@ -86,6 +86,10 @@
     margin: 5px 0;
 }
 
+.url-meta-container-title-link {
+    color: inherit;
+}
+
 .url-meta-container-footer {
     border-top: 2px solid;
     padding: 5px 5px 5px 10px;

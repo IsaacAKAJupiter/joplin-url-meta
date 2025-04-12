@@ -105,7 +105,7 @@ export async function getURLMetaHTML(
                     mobile
                         ? `
                             <p class="url-meta-container-title">
-                                <a class="url-meta-container-open" target="_blank" rel="noopener noreferrer" href="${
+                                <a class="url-meta-container-title-link" target="_blank" rel="noopener noreferrer" href="${
                                     meta.url
                                 }">
                                     ${escapeHtml(title)}

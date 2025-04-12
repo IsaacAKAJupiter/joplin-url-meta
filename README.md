@@ -85,4 +85,8 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 - Fixed an issue related to how the `~` (tilde) hiding worked.
   - If the URL had path (more than just the FQDN), it would not remain clickable.
 
+### v1.0.13
+
+- Fixed issue where titles on mobile had a green background and blue text.
+
 ## Roadmap/Known Issues
