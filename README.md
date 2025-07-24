@@ -89,4 +89,9 @@ This plugin will grab and fetch meta tags (title, description and image) from UR
 
 - Fixed issue where titles on mobile had a green background and blue text.
 
+### v1.0.14
+
+- Fixed issue where there was sometimes a space between brackets and start of link (#10).
+- Fixed issue in compact display mode where a text node was causing the URL Meta display in the markup to be rendered in the middle (#9).
+
 ## Roadmap/Known Issues
