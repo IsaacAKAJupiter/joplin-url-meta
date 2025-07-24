@@ -39,21 +39,16 @@ export default function (context) {
                     return false;
                 `;
 
-                return `
-                    <a
-                        data-from-md ${
-                            href.endsWith('~') || surroundedWithAngled
-                                ? 'data-hide-md'
-                                : ''
-                        }
-                        ${title ? `title="${title}"` : ''}
-                        href="${hrefWithoutTilde}"
-                        onclick="${postMessageWithResponseTest.replace(
-                            /\n/g,
-                            ' ',
-                        )}"
-                    >
-                `;
+                return `<a
+                    data-from-md ${
+                        href.endsWith('~') || surroundedWithAngled
+                            ? 'data-hide-md'
+                            : ''
+                    }
+                    ${title ? `title="${title}"` : ''}
+                    href="${hrefWithoutTilde}"
+                    onclick="${postMessageWithResponseTest.replace(/\n/g, ' ')}"
+                >`;
             };
         },
         assets: function () {

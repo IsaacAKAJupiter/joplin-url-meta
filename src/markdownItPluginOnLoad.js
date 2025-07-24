@@ -46,7 +46,7 @@ function getElementToDisplayAfter(el, displayMethod) {
     if (newEl) return newEl;
 
     // If no other nodes, we can just display it after the last child node.
-    return el.parentElement.lastElementChild;
+    return el.parentElement.lastChild;
 }
 
 async function handleURLMetaAnchors() {
@@ -153,10 +153,14 @@ async function handleURLMetaAnchors() {
                 brToRemove.push(el.nextSibling);
             }
 
-            el.insertAdjacentHTML(
-                el.nodeName == 'BR' ? 'beforebegin' : 'afterend',
-                html,
-            );
+            if ('insertAdjacentHTML' in el) {
+                el.insertAdjacentHTML(
+                    el.nodeName == 'BR' ? 'beforebegin' : 'afterend',
+                    html,
+                );
+            } else {
+                el.parentElement.insertAdjacentHTML('beforeend', html);
+            }
         } catch (e) {
             console.error(e);
         }
